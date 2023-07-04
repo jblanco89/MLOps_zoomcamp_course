@@ -1,0 +1,13 @@
+mlflow
+jupyter
+scikit-learn
+pandas
+pandas_datareader
+pandas_ta
+mplfinance
+tensorflow
+yfinance
+seaborn
+hyperopt
+fastparquet
+
