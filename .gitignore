@@ -1,3 +1,4 @@
 *.db
 *.csv
-./mlruns
+mlruns/*
+.gitignore
