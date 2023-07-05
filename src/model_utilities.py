@@ -292,6 +292,27 @@ def reshape_test_data(df: pd.DataFrame) -> np.ndarray:
   return X_test
 
 
+def reshape_data(X: np.ndarray, timesteps: int) -> np.ndarray:
+  '''
+    Reshapes the test data for LSTM model prediction.
+
+    Parameters:
+    -----------
+    df (pd.DataFrame): A pandas DataFrame containing the test data.
+
+    Returns:
+    --------
+    np.ndarray: The reshaped test data in the form of a 3D numpy array.
+
+  '''
+  X = X
+  timesteps = timesteps
+  n_features = X.shape[1]
+  X_test = np.array([X[i:i+timesteps] for i in range(len(X) - timesteps + 1)])
+  X_test = X_test.reshape(X_test.shape[0], timesteps, n_features)
+  return X_test 
+
+
 def predictions_as_array(df: pd.DataFrame, X_array: np.ndarray, model) -> np.ndarray:
     '''
     Converts predictions to an array and applies inverse scaling.

@@ -1,4 +1,5 @@
 *.db
 *.csv
-mlruns/*
+mlruns
 .gitignore
+src/__pycache__
