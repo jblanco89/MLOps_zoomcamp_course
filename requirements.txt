@@ -10,4 +10,5 @@ yfinance
 seaborn
 hyperopt
 fastparquet
+prefect
 

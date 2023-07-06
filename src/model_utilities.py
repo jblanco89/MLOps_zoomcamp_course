@@ -47,8 +47,8 @@ def get_stock_prices(symbol: str, end : str):
     df['Symbol'] = symbol
     df.reset_index(inplace=True)
     end = end.replace('-', '')
-    print(df.tail())
-    return df.to_csv(f'./data/{symbol}_{end}.csv', sep=',', index=False)
+    df.to_csv(f'./data/{symbol}_{end}.csv', sep=',', index=False)
+    return f'./data/{symbol}_{end}.csv'
 
 
 def technical_indicators(df_path: str):
@@ -180,7 +180,8 @@ def data_preprocess(df):
 
 
 def lstm_model_train(df: pd.DataFrame,
-                  symbol: str = 'GOOG', 
+                  symbol: str = 'GOOG',
+                  selected_hidden_units: int = 200, 
                   selected_activation: str = 'relu', 
                   selected_learning_rate: float = 0.001, 
                   selected_epochs: int = 100, 
@@ -243,7 +244,7 @@ def lstm_model_train(df: pd.DataFrame,
   selected_loss_function ='mse'
 # Define the LSTM model
   model = Sequential()
-  model.add(LSTM(units=200, 
+  model.add(LSTM(units=selected_hidden_units, 
                  return_sequences=True, 
                  input_shape=(X_train.shape[1], X_train.shape[2])))
   model.add(Dropout(0.2))
@@ -263,7 +264,7 @@ def lstm_model_train(df: pd.DataFrame,
                       epochs=selected_epochs, 
                       batch_size=selected_batch_size, 
                       verbose=1)
-  with open('../models/lstm_model.pkl', 'wb') as file:
+  with open('./models/lstm_model.pkl', 'wb') as file:
     pickle.dump(history.model, file)              
 
   return history, X_test, Y_test

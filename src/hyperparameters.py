@@ -1,15 +1,13 @@
-from model import get_stock_prices, technical_indicators
-from model import handle_outliers, data_preprocess, drop_columns
-from model import reshape_data, predictions_as_array, show_data_result
-from model import  reshape_test_data, predictions_as_array
+from model_utilities import technical_indicators
+from model_utilities import handle_outliers, data_preprocess, drop_columns
+from model_utilities import reshape_data
 from sklearn.metrics import mean_squared_error, r2_score
-from sklearn.model_selection import GridSearchCV, RandomizedSearchCV, KFold
+from sklearn.model_selection import GridSearchCV
 from sklearn.model_selection import train_test_split
 from keras.wrappers.scikit_learn import KerasRegressor
 from keras.models import Sequential
 from keras.layers import Dense, LSTM, Dropout
 from keras.optimizers import Adam
-from mlflow.tracking import MlflowClient
 from mlflow.models.signature import infer_signature
 
 import pickle
@@ -133,7 +131,6 @@ def grid_search_lstm_model(df_path):
             mlflow.set_tag("model", "lstm")
             mlflow.log_param("train-data-path", "./data/AAPL_20230601.csv")
             signature = infer_signature(Y_test_reshaped, reshaped_Y_pred)
-
             for param, value in grid_search.best_params_.items():
                 mlflow.log_param(param, value)
             mlflow.log_metric("rmse", rmse)

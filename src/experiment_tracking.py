@@ -1,11 +1,5 @@
 from hyperparameters import run_trials_lstm_model
-from mlflow.models.signature import infer_signature
-
-import pickle
 import mlflow
-import numpy as np
-import pandas as pd
-import mlflow.sklearn
 
 if __name__ == '__main__':
     mlflow.set_tracking_uri("sqlite:///mlflow.db")
