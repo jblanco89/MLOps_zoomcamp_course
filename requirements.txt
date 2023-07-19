@@ -5,10 +5,18 @@ pandas
 pandas_datareader
 pandas_ta
 mplfinance
-tensorflow
+tensorflow==2.11.0
 yfinance
 seaborn
 hyperopt
 fastparquet
 prefect
+evidently
+google-cloud-bigquery
+google-cloud-storage
+gcsfs
+pandas-gbq
+protobuf==3.20.*
+
+
 

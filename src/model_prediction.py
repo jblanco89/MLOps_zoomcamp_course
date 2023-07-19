@@ -14,12 +14,13 @@ loaded_model = mlflow.pyfunc.load_model(logged_model)
 
 print(loaded_model)
 
-df_path = './data/GOOG_20230601.csv'
+df_path = './data/GOOG_20230130.csv'
 
 data_raw = technical_indicators(df_path=df_path)
 data = handle_outliers(data_raw, 'Close')
 data = drop_columns(data)
 scaled_data = data_preprocess(data)
+
 
 
 print(loaded_model.predict(scaled_data.tail(50)))

@@ -2,4 +2,7 @@
 *.csv
 mlruns
 .gitignore
+.prefectignore
+environment_dl.yml
 src/__pycache__
+credentials/*

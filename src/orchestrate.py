@@ -4,11 +4,16 @@ import pandas as pd
 import numpy as np
 import time
 from prefect import task, flow
+from evidently import ColumnMapping
+from evidently.report import Report
+from evidently.metric_preset import DataDriftPreset, DataQualityPreset
+from evidently.metric_preset import TargetDriftPreset, RegressionPreset
 from model_utilities import get_stock_prices, technical_indicators
 from model_utilities import drop_columns, data_preprocess, handle_outliers
 from model_utilities import lstm_model_train, reshape_test_data, reshape_data
 from sklearn.metrics import mean_squared_error, r2_score
 from mlflow.models.signature import infer_signature
+
 
 # pf.context.config.load_system_config()
 
@@ -17,14 +22,11 @@ EXPERIMENT_NAME = "LSTM_Hyperparameter_Experiment"
 mlflow.set_experiment(EXPERIMENT_NAME)
 experiment = mlflow.get_experiment_by_name(EXPERIMENT_NAME)
 
-symbol = 'MSFT'
-date_end = '2023-02-28'
-
 @task(name="Data entry",
       description="Stock prices entry by csv file", 
       retries=3, 
       retry_delay_seconds=2)
-def data_ingestion() -> str:
+def data_ingestion(symbol, date_end) -> str:
     df_path = get_stock_prices(symbol=symbol, end=date_end)
     time.sleep(2)
     return df_path
@@ -59,9 +61,9 @@ def preprocess_data(data):
 
 @task(name="Train Model",
       description="best model is trained so predict prices for next 10 days", 
-      retries=3, 
-      retry_delay_seconds=2)
-def train_model(df):
+      retries=1, 
+      retry_delay_seconds=1)
+def train_model(df, symbol):
     # Train your LSTM model and log relevant metrics
     batch_size = 60
     epochs = 5
@@ -76,68 +78,93 @@ def train_model(df):
                         selected_epochs=epochs,
                         plot_lstm_model=False)
 
+    return model, X_test, Y_test 
+
+@task
+def evaluate_model(df, model, X_test, Y_test):
+    batch_size = 60
+    epochs = 5
+    hidden_units=256
+    learning_rate=0.001
+    # Evaluate your LSTM model
+    # df = df[['Date','Close']]
+    # df = df.set_index('Date')
+    df = df.tail(360)
+    min_value = np.min(df['Close'])
+    max_value = np.max(df['Close'])
+
+    num_time_steps = 10  # Example: Use 10 time steps
+    num_features = 1  # Example: Use 1 feature (Close price)
+    n = np.int((len(df)/num_time_steps))
+    subset_df = df.tail(n)
+    X_test = np.reshape(df['Close'].values, (len(subset_df), num_time_steps, num_features))
+    # print(X)
+    X_test = np.repeat(X_test, 9, axis=-1)
+
+    Y_pred = model.model.predict(X_test)
+    Y_pred = Y_pred[0]
+    Y_test = Y_test[-10:]
+
+    Y_pred = Y_pred * (max_value - min_value) + min_value
+    Y_test = Y_test * (max_value - min_value) + min_value
+
+    time.sleep(1)
+    print(Y_pred)
+    print(Y_test)
+    print(Y_test.shape)
+    
+    rmse = mean_squared_error(Y_pred, Y_test, squared=False)
+    r2 = r2_score(Y_pred, Y_pred)
+    signature = infer_signature(X_test, Y_test)
+
+    
     with mlflow.start_run():
+        # Evaluate your LSTM model and log relevant metrics
         mlflow.set_tag("developer", "Javier")
         mlflow.set_tag("model", "lstm")
         mlflow.log_param("epochs", epochs)
         mlflow.log_param("hidden_units", hidden_units)
         mlflow.log_param("learning_rate", learning_rate)
         mlflow.log_param("batch_size", batch_size)
-    return model, X_test, Y_test
-
-@task
-def evaluate_model(df, model, X_test, Y_test):
-    # Evaluate your LSTM model
-    min_value = np.min(df['Close'])
-    max_value = np.max(df['Close'])
-
-    Y_pred = model.model.predict(X_test)
-    time.sleep(1)
-    Y_test_1D = Y_test * (max_value - min_value) + min_value
-    rmse = mean_squared_error(Y_test_1D, (Y_test_1D*0.9), squared=False)
-    r2 = r2_score(Y_test_1D, (Y_test_1D*0.9))
-    signature = infer_signature(X_test, Y_test)
-    
-    with mlflow.start_run():
-        # Evaluate your LSTM model and log relevant metrics
-        
         mlflow.sklearn.log_model(model, 
                                     artifact_path="lstm_model", 
                                     signature=signature)
         mlflow.log_artifact(local_path="./models/lstm_model.pkl", artifact_path="models_pickle")
         mlflow.log_metric("rmse", rmse)
         mlflow.log_metric("r2", r2)
-    pass
+    
+    return Y_pred, Y_test
+
+@task
+def generate_report(Y_pred, Y_test):
+    report = Report(metrics=[
+    DataDriftPreset(),
+    DataQualityPreset(),
+    # TargetDriftPreset(),
+    # RegressionPreset()
+    ])
+
+    current = pd.DataFrame({'Close': Y_test})
+    df_reference = pd.DataFrame({'Close': Y_pred})
+    df_reset = df_reference.reset_index(drop=True)
+    current_reset = current.reset_index(drop=True)
+
+    df_reset = pd.DataFrame(df_reset, columns=['Close'])
+    current_reset = pd.DataFrame(current_reset, columns=['Close'])
+    report.run(reference_data=df_reset.tail(10), current_data=current_reset.tail(10))
+
+    report.save_html("./reports/dataReport.html")
+    report.save_json("./reports/dataReport.json")
 
 
 @flow
-def set_workflow():
-    path = data_ingestion()
+def set_workflow(symbol, date_end):
+    path = data_ingestion(symbol, date_end)
     data_tech = set_technical_indicators(path)
     data_outliers = remove_outliers(data_tech)
     scaled_data = preprocess_data(data_outliers)
-    model, X_test, Y_test = train_model(scaled_data)
-    evaluate_model(data_outliers, model, X_test, Y_test)
-
-if __name__ == "__main__":
-    set_workflow()
+    model, X_test, Y_test = train_model(scaled_data, symbol)
+    Y_pred, Y_test = evaluate_model(data_outliers, model, X_test, Y_test)
+    # generate_report(Y_pred=Y_pred, Y_test=Y_test)
 
 
-# @task
-# def deploy_model():
-#     # Deploy your LSTM model
-
-#      mlflow.sklearn.log_model(model, "lstm_model")
-#     pass
-
-# with Flow("LSTM Model Training") as flow:
-#     data_ingestion()
-#     set_technical_indicators()
-#     remove_outliers()
-#     preprocess_data()
-#     train_model()
-#     evaluate_model()
-#     # model_deployed = deploy_model(model_evaluated)
-
-# Run the flow
-# flow.run()
