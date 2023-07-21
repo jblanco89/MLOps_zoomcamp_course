@@ -17,7 +17,8 @@ from mlflow.models.signature import infer_signature
 
 # pf.context.config.load_system_config()
 
-mlflow.set_tracking_uri("sqlite:///mlflow.db")
+# mlflow.set_tracking_uri("sqlite:///mlflow.db")
+mlflow.set_tracking_uri("http://34.175.211.162:5000/")
 EXPERIMENT_NAME = "LSTM_Hyperparameter_Experiment"
 mlflow.set_experiment(EXPERIMENT_NAME)
 experiment = mlflow.get_experiment_by_name(EXPERIMENT_NAME)
@@ -65,9 +66,9 @@ def preprocess_data(data):
       retry_delay_seconds=1)
 def train_model(df, symbol):
     # Train your LSTM model and log relevant metrics
-    batch_size = 60
-    epochs = 5
-    hidden_units=256
+    batch_size = 10
+    epochs = 20
+    hidden_units=128
     learning_rate=0.001
     model, X_test, Y_test = lstm_model_train(df=df, 
                         symbol=symbol, 
@@ -82,14 +83,12 @@ def train_model(df, symbol):
 
 @task
 def evaluate_model(df, model, X_test, Y_test):
-    batch_size = 60
-    epochs = 5
-    hidden_units=256
+    batch_size = 10
+    epochs = 20
+    hidden_units=128
     learning_rate=0.001
-    # Evaluate your LSTM model
-    # df = df[['Date','Close']]
-    # df = df.set_index('Date')
-    df = df.tail(360)
+
+    df = df.tail(180) #last six months
     min_value = np.min(df['Close'])
     max_value = np.max(df['Close'])
 
@@ -153,7 +152,7 @@ def generate_report(Y_pred, Y_test):
     current_reset = pd.DataFrame(current_reset, columns=['Close'])
     report.run(reference_data=df_reset.tail(10), current_data=current_reset.tail(10))
 
-    report.save_html("./reports/dataReport.html")
+    # report.save_html("./reports/dataReport.html")
     report.save_json("./reports/dataReport.json")
 
 
@@ -165,6 +164,8 @@ def set_workflow(symbol, date_end):
     scaled_data = preprocess_data(data_outliers)
     model, X_test, Y_test = train_model(scaled_data, symbol)
     Y_pred, Y_test = evaluate_model(data_outliers, model, X_test, Y_test)
+    # print(Y_pred)
+    # print(Y_test)
     # generate_report(Y_pred=Y_pred, Y_test=Y_test)
 
 
