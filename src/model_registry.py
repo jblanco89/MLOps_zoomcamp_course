@@ -8,7 +8,8 @@ import pandas as pd
 import mlflow.sklearn
 
 if __name__ == '__main__':
-    mlflow.set_tracking_uri("sqlite:///mlflow.db")
+    # mlflow.set_tracking_uri("sqlite:///mlflow.db")
+    mlflow.set_tracking_uri("http://34.175.211.162:5000/")
     EXPERIMENT_NAME = "LSTM_Hyperparameter_Experiment"
     mlflow.set_experiment(EXPERIMENT_NAME)
     experiment = mlflow.get_experiment_by_name(EXPERIMENT_NAME)

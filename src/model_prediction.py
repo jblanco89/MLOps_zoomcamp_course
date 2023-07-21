@@ -7,7 +7,7 @@ import mlflow
 import mlflow.pyfunc
 import pandas as pd
 mlflow.set_tracking_uri("sqlite:///mlflow.db")
-logged_model = 'runs:/9aa4885427bf48c2837b1c608c799945/lstm_model'
+logged_model = 'runs:/f9c2ed1d39fc40f49291aabd2c248913/lstm_model'
 
 # Load model as a PyFuncModel.
 loaded_model = mlflow.pyfunc.load_model(logged_model)
