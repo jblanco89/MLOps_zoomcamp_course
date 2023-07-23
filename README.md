@@ -71,10 +71,10 @@ Experiment Tracking results afrer 152 runs simulations
 
 ![Experiment_Tracking](./img/coordinate_plot.jpg)
 
-You may check MlFlow Experimente results here:
+You may check MlFlow experiment tracking and model registry here:
 
 
-![ml_flow_app_gcp](http://34.175.211.162:5000/).
+[MLFlow](http://34.175.211.162:5000/).
 
 
 ## Prefect

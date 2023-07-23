@@ -1,4 +1,4 @@
-from orchestrate import set_workflow
+from orchestrate_module import set_workflow
 from prefect.deployments import Deployment
 
 deployment = Deployment.build_from_flow(
