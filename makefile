@@ -5,18 +5,18 @@ DATA_DIR = data
 
 # Create the directory if it does not exist
 create_data_directory:
-        @if [ ! -d "$(DATA_DIR)" ]; then \
+	@if [ ! -d "$(DATA_DIR)" ]; then \
                 mkdir -p "$(DATA_DIR)"; \
-        fi
+	fi
 
 set_data_directory_permissions:
-        chmod -R 777 "$(DATA_DIR)"
+	chmod -R 777 "$(DATA_DIR)"
 
 build_docker_image:
-        docker build -t $(DOCKER_IMAGE_NAME) .
+	docker build -t $(DOCKER_IMAGE_NAME) .
 
 run_docker_container:
-        docker run -p 5000:5000 $(DOCKER_IMAGE_NAME)
+	docker run -p 5000:5000 $(DOCKER_IMAGE_NAME)
 
 # Phony targets (these targets are not file names)
 .PHONY: create_data_directory set_data_directory_permissions build_docker_image run_docker_container
