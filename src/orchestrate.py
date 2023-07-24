@@ -8,4 +8,5 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     set_workflow(args.symbol, args.date_end)
+    # generate_report_to_bq()
     

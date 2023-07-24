@@ -16,4 +16,3 @@ if __name__ == "__main__":
     cloud_path = upload_csv_to_gcs(bucket_name=bucket_name, 
                                    source_file_path=local_path, 
                                    destination_blob_name=destination_name)
-    

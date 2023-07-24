@@ -13,6 +13,7 @@ from model_utilities import drop_columns, data_preprocess, handle_outliers
 from model_utilities import lstm_model_train, reshape_test_data, reshape_data
 from sklearn.metrics import mean_squared_error, r2_score
 from mlflow.models.signature import infer_signature
+from reports import generate_report_to_bq
 
 
 # pf.context.config.load_system_config()
@@ -137,14 +138,13 @@ def evaluate_model(df, model, X_test, Y_test):
 @task
 def generate_report(Y_pred, Y_test):
     report = Report(metrics=[
-    DataDriftPreset(),
-    DataQualityPreset(),
-    # TargetDriftPreset(),
-    # RegressionPreset()
+    DataDriftPreset()
     ])
 
+    Y_pred_flattened = np.ravel(Y_pred)
+
     current = pd.DataFrame({'Close': Y_test})
-    df_reference = pd.DataFrame({'Close': Y_pred})
+    df_reference = pd.DataFrame({'Close': Y_pred_flattened})
     df_reset = df_reference.reset_index(drop=True)
     current_reset = current.reset_index(drop=True)
 
@@ -166,6 +166,7 @@ def set_workflow(symbol, date_end):
     Y_pred, Y_test = evaluate_model(data_outliers, model, X_test, Y_test)
     # print(Y_pred)
     # print(Y_test)
-    # generate_report(Y_pred=Y_pred, Y_test=Y_test)
+    generate_report(Y_pred=Y_pred, Y_test=Y_test)
+    generate_report_to_bq()
 
 

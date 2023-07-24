@@ -1,3 +1,4 @@
+psycopg2-binary
 mlflow
 jupyter
 scikit-learn
@@ -16,7 +17,7 @@ google-cloud-bigquery
 google-cloud-storage
 gcsfs
 pandas-gbq
-protobuf==3.20.*
+# protobuf==3.20.*
 
 
 
