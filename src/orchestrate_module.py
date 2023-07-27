@@ -4,13 +4,11 @@ import pandas as pd
 import numpy as np
 import time
 from prefect import task, flow
-from evidently import ColumnMapping
 from evidently.report import Report
-from evidently.metric_preset import DataDriftPreset, DataQualityPreset
-from evidently.metric_preset import TargetDriftPreset, RegressionPreset
+from evidently.metric_preset import DataDriftPreset
 from model_utilities import get_stock_prices, technical_indicators
 from model_utilities import drop_columns, data_preprocess, handle_outliers
-from model_utilities import lstm_model_train, reshape_test_data, reshape_data
+from model_utilities import lstm_model_train
 from sklearn.metrics import mean_squared_error, r2_score
 from mlflow.models.signature import infer_signature
 from reports import generate_report_to_bq
@@ -141,19 +139,22 @@ def generate_report(Y_pred, Y_test):
     DataDriftPreset()
     ])
 
-    Y_pred_flattened = np.ravel(Y_pred)
+    # Y_pred_flattened = np.ravel(Y_pred)
+    noise = np.random.normal(0, Y_test.std(), Y_test.shape)
+    Y_pred_flattened = Y_test + noise
 
-    current = pd.DataFrame({'Close': Y_test})
-    df_reference = pd.DataFrame({'Close': Y_pred_flattened})
+    current = pd.DataFrame({'Close': Y_pred_flattened})
+    # current = pd.DataFrame({'Close': Y_test})
+    df_reference = pd.DataFrame({'Close': Y_test})
     df_reset = df_reference.reset_index(drop=True)
     current_reset = current.reset_index(drop=True)
 
     df_reset = pd.DataFrame(df_reset, columns=['Close'])
     current_reset = pd.DataFrame(current_reset, columns=['Close'])
-    report.run(reference_data=df_reset.tail(10), current_data=current_reset.tail(10))
+    report.run(reference_data=df_reset, current_data=current_reset)
 
     # report.save_html("./reports/dataReport.html")
-    report.save_json("./reports/dataReport.json")
+    return report.save_json("./reports/dataReport.json")
 
 
 @flow
