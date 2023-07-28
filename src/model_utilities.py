@@ -1,3 +1,26 @@
+'''
+This code contains functions for fetching stock prices, performing technical indicator calculations, 
+handling outliers, and training an LSTM model for stock price prediction. 
+It imports various libraries for data manipulation, technical analysis, 
+machine learning, and data visualization. 
+
+The main tasks performed by the code are:
+
+1) Fetching stock prices from Yahoo Finance and saving them as a CSV file.
+2) Calculating technical indicators such as log return, percent return, exponential moving averages (EMA), 
+simple moving averages (SMA), MACD, and RSI for the stock data.
+3) Handling outliers in the "Close" column of the DataFrame by detecting and removing them.
+4) Preprocessing the data by scaling it using MinMaxScaler to a range of [0, 1].
+5) Defining and training an LSTM model for stock price prediction using the Keras library with various hyperparameters such as the number of hidden units, learning rate, batch size, epochs, and loss function.
+6) Generating plots related to the Moving Average Convergence Divergence (MACD) and Relative Strength Index (RSI) indicators.
+7) Saving the trained LSTM model as a pickle file.
+
+
+The code can be used for stock price analysis and prediction, 
+
+'''
+
+
 
 #Import libraries
 import pandas as pd

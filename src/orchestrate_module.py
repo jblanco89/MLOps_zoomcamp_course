@@ -1,3 +1,41 @@
+'''
+This code defines a Prefect workflow to predict stock prices using an LSTM model, 
+evaluate the model's performance, and generate a data drift report (EVIDENTLY AI). 
+
+The main tasks performed are:
+
+1) Data Ingestion (Task name: "Data entry"): Fetches stock prices data 
+for a given symbol and end date from Yahoo Finance and saves it as a CSV file.
+
+2) Technical Indicators Calculation (Task name: "Technical indicators"): 
+Calculates various technical indicators such as MACD, RSI, and SMA for the stock data.
+
+3) Handling Outliers (Task name: "Handling Outliers"): Detects and removes outliers 
+from the data based on the "Close" column.
+
+4) Clean & Preprocess (Task name: "Clean & preprocess"): Drops unnecessary columns and 
+normalizes the data using MinMaxScaler.
+
+5) Train Model (Task name: "Train Model"): Trains an LSTM model for stock price 
+prediction with specified hyperparameters.
+
+6) Evaluate Model (Task name: "Evaluate Model"): Evaluates the trained 
+LSTM model on test data and logs relevant metrics such as RMSE and R^2.
+
+7) Generate Report (Task name: "Generate Report"): Generates a data drift 
+report using the Evidently library.
+
+8) Workflow (Flow name: "set_workflow"): Defines the Prefect workflow by connecting 
+the tasks in the desired order.
+
+Notice: The workflow also interacts with MLflow, 
+logging various metrics, parameters, and the trained model. 
+It is also integrated with BigQuery to save the generated data drift report.
+
+'''
+
+
+
 import prefect as pf
 import mlflow
 import pandas as pd
@@ -165,8 +203,6 @@ def set_workflow(symbol, date_end):
     scaled_data = preprocess_data(data_outliers)
     model, X_test, Y_test = train_model(scaled_data, symbol)
     Y_pred, Y_test = evaluate_model(data_outliers, model, X_test, Y_test)
-    # print(Y_pred)
-    # print(Y_test)
     generate_report(Y_pred=Y_pred, Y_test=Y_test)
     generate_report_to_bq()
 

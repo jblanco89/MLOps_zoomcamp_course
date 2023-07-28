@@ -1,3 +1,10 @@
+'''
+Sets up  MLflow experiment,retrieves the best-performing run based on the "rmse" metric, and 
+registers the model from that run as a new version of "LSTM Model" in MLflow. 
+The script connects to an MLflow tracking server using the specified URI and MlflowClient.
+
+'''
+
 from mlflow.tracking import MlflowClient
 from mlflow.models.signature import infer_signature
 

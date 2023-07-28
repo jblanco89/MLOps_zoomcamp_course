@@ -1,3 +1,11 @@
+'''
+Defines a command-line interface (CLI) for running data processing workflow 
+defined in the "orchestrate_module" module. 
+The workflow requires two input arguments: "symbol" and "date_end." 
+The user can provide these arguments when executing the script.
+
+'''
+
 from orchestrate_module import set_workflow
 import argparse
 
@@ -8,5 +16,5 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     set_workflow(args.symbol, args.date_end)
-    # generate_report_to_bq()
+
     

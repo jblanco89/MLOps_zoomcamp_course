@@ -1,3 +1,11 @@
+'''
+ the script fetches stock prices data for a specific symbol and date range, 
+ saves it to a local CSV file, and then uploads the file to Google Cloud Storage 
+ for further processing or analysis.
+
+'''
+
+
 from workload import get_stock_prices
 from workload import upload_csv_to_gcs
 import argparse

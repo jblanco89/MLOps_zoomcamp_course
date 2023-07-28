@@ -1,3 +1,24 @@
+'''
+Defines two functions:
+
+1) get_stock_prices: Fetches daily stock prices from Yahoo Finance for a 
+specified stock symbol up to a given end date. It then adds the stock symbol 
+to the data, resets the index, and exports it to a CSV file. 
+The CSV file is saved with a filename based on the stock symbol and end date. 
+The function returns the path to the saved CSV file.
+
+2) upload_csv_to_gcs: Uploads a local CSV file to Google Cloud Storage (GCS). 
+It takes the GCS bucket name, local file path of the CSV file to upload, 
+and the name of the blob (object) to create in the bucket as input. 
+The function uses the Google Cloud Storage client to upload the 
+file and returns the public URL of the uploaded CSV file in GCS. 
+After uploading, the local CSV file is removed.
+
+
+'''
+
+
+
 # cloud_function.py
 import pickle
 import pandas as pd

@@ -1,3 +1,10 @@
+'''
+This script performs hyperparameter tuning for LSTM model using MLflow. 
+It sets the MLflow tracking URI, specifies the experiment, 
+and runs 100 trials to search for the best hyperparameters for the LSTM model 
+using the run_trials_lstm_model function.
+'''
+
 from hyperparameters import run_trials_lstm_model
 import mlflow
 

@@ -1,3 +1,21 @@
+'''
+ build, train, and hyperparameter tune the LSTM model using MLflow and Keras.
+ Basically:
+ Import necessary libraries and utility functions from other modules.
+ Define a function to create an LSTM model with hyperparameters.
+ Define a function to load a trained model from a file.
+ Define a function for running hyperparameter tuning using random trials.
+ Define a function for hyperparameter tuning using grid search.
+
+
+ Inside the main section, it sets up MLflow tracking, runs hyperparameter tuning using random trials 
+ (run_trials_lstm_model) for 20 trials, and logs the results and the trained models to MLflow.
+ Additionally, there's another function for hyperparameter tuning using grid search 
+ (grid_search_lstm_model). However, it is not used in the main section.
+ 
+'''
+
+
 from model_utilities import technical_indicators
 from model_utilities import handle_outliers, data_preprocess, drop_columns
 from model_utilities import reshape_data

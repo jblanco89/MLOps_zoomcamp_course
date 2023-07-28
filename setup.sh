@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# updates packages, installs the make utility, 
+# creates and sets permissions for a data directory, 
+# builds a Docker image, and runs a Docker container for an LSTM application.
+
 apt-get update
 apt-get install -y make
 

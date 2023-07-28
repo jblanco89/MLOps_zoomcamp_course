@@ -1,6 +1,7 @@
+'''
+This script loads a trained LSTM model using MLflow and makes predictions on a dataset. 
 
-# TO TEST LATER
-# DO NOT EXECUTE YET
+'''
 
 from model_utilities import technical_indicators, handle_outliers, drop_columns, data_preprocess, lstm_model_train
 import mlflow

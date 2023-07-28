@@ -1,3 +1,9 @@
+'''
+ Reads data from a JSON file named "dataReport.json," 
+ processes the data, and uploads it to a BigQuery dataset and table.
+
+'''
+
 from google.cloud import bigquery
 import pandas as pd
 import pandas_gbq
