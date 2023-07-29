@@ -204,7 +204,8 @@ Experiment Tracking results after 152 runs simulations:
 
 ![Experiment_Tracking](./img/coordinate_plot.jpg)
 
-You may check MlFlow experiment tracking and model registry here: [MLFlow](http://34.175.211.162:5000/).
+MLFlow was deployed in GCP (scenario 5 according [documentation](https://mlflow.org/docs/latest/tracking.html#scenario-5-mlflow-tracking-server-enabled-with-proxied-artifact-storage-access)). 
+You may check MLFlow experiment tracking and model registry clicking in this [Link](http://34.175.211.162:5000/).
 
 ### Model Registry
 
