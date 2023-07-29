@@ -25,6 +25,9 @@ For this project cloud-based approach was chosen. By utilizing Google Cloud Plat
 To sum, this stock price prediction system addresses the specific needs of traders and investors by providing accurate predictions, timely insights, and efficient model management through cloud technology. With this solution, traders could stay ahead in the fast-paced financial markets, make informed decisions, and enhance their overall financial outcomes.
 
 
+
+*Introduction, Motivation, Objetives and Planning Schema are explained in the paper [here](paper.pdf)*
+
 ## Solution Architecture
 
 **Important**: *Linux (Ubuntu 22.04 LTS) is the recommended development environment.*
