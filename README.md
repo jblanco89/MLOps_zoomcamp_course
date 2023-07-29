@@ -10,10 +10,11 @@
 6. [Orchestration (Prefect 2.0)](#orchestration-prefect-20)
 7. [Monitoring (Evidently AI)](#monitoring-evidently-ai)
 8. [Dashboard](#dashboard)
-9. [Recomendations](#recomendations)
-10. [References](#references)
-11. [Annexes](#annexes)
-12. [Exploratory Data Analysis](./EDA/stock_market_analysis.ipynb)
+9. [Makefile and Dockefile](#makefile-and-dockefile)
+10. [Recomendations](#recomendations)
+11. [References](#references)
+12. [Annexes](#annexes)
+13. [Exploratory Data Analysis](./EDA/stock_market_analysis.ipynb)
 
 
 ## Project Description
@@ -119,6 +120,8 @@ The integration of Cloud Functions, BigQuery, and Looker Studio streamlines the 
 To install the app, you need to have Anaconda, Docker, and Docker-Compose installed on your system. You have a perfect installation guide in this [link](https://github.com/DataTalksClub/mlops-zoomcamp/tree/main/01-intro)
 
 **NOTICE**, After installing Anaconda, Google Cloud SDK must be also installed in your system. Lear more [here](https://cloud.google.com/sdk/docs/install?hl=en)
+
+If you are dealing issues with Anaconda environment you may find useful some [bits](troubleshooting_conda.md)
 
 To download the Linux 64-bit archive file, at the command line, run:
 
@@ -335,6 +338,72 @@ Using Bigquery we get data table like this:
 
 As a result, we'll be able to see the following dashboard:
 ![Dashboard](./img/Dashboard_1.png)
+
+## Makefile and Dockefile
+
+### Dockerfile
+```docker
+# This Dockerfile sets up a Python 3.8 environment, 
+# installs necessary dependencies (libpq-dev), and 
+# installs MLflow along with its required packages. 
+# It then copies the local files into the container's working directory. 
+# Finally, it runs the MLflow server with specific configurations, 
+# using PostgreSQL as the backend store and Google Cloud Storage for 
+# artifact storage.
+
+
+# syntax=docker/dockerfile:1
+
+FROM python:3.8-slim-buster
+
+RUN apt-get update && apt-get install -y libpq-dev
+
+WORKDIR /MLOps_zoomcamp_course
+
+RUN python -m ensurepip --default-pip && pip install --no-cache-dir --upgrade pip
+
+RUN pip install psycopg2-binary
+
+RUN pip install mlflow
+
+COPY . .
+
+CMD ["mlflow", "server", "-h", "0.0.0.0", "-p", "5000", "--backend-store-uri", "postgresql://postgres:1234@10.28.192.5:5432/mlflow", "--default-artifact-root", "gs://lstm_model_test"]
+
+```
+
+### Makefile
+
+```make
+# This Makefile defines rules for building and running a Docker container 
+# for an LSTM application. It includes commands to create a data directory, 
+# set its permissions, build a Docker image, and run the Docker container. 
+# The .PHONY target ensures these rules are always executed, 
+# regardless of existing files with the same names as the targets.
+
+
+DOCKER_IMAGE_NAME = lstm_app_image
+CURRENT_DIR := $(shell pwd)
+DATA_DIR = data
+
+# Create the directory if it does not exist
+create_data_directory:
+	@if [ ! -d "$(DATA_DIR)" ]; then \
+                mkdir -p "$(DATA_DIR)"; \
+	fi
+
+set_data_directory_permissions:
+	chmod -R 777 "$(DATA_DIR)"
+
+build_docker_image:
+	docker build -t $(DOCKER_IMAGE_NAME) .
+
+run_docker_container:
+	docker run -p 5000:5000 $(DOCKER_IMAGE_NAME)
+
+.PHONY: create_data_directory set_data_directory_permissions build_docker_image run_docker_container
+
+```
 
 
 ## Recomendations
