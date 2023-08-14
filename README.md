@@ -20,13 +20,13 @@
 ## Project Description
 This project aims to develop and deploy a stock price prediction system using an LSTM model, which predicts stock prices with a 10-day lag based on historical OHLC and technical indicators such as MACD, RSI, SMA and EMA. By providing accurate predictions, the system empowers traders to make well-informed decisions, optimize investment strategies, and minimize risks while capitalizing on market fluctuations.
 
-For this project cloud-based approach was chosen. By utilizing Google Cloud Platform (GCP) and MLflow integration, efficiency and scalability of the system is significatibly enhanced. Deploying the LSTM model on GCP also enables seamless batch processing of large datasets, ensuring timely predictions. Additionally, MLflow's model tracking and versioning features facilitate efficient monitoring and maintenance of the model's performance over time. Furthermore, the Prefect framework orchestrates the workflow, automating data processing, scheduling, and error handling, resulting in a streamlined and reliable end-to-end solution.
+For this project cloud-based approach was chosen. By utilizing Google Cloud Platform (GCP) and MLflow integration, efficiency and scalability of the system is significantly enhanced. Deploying the LSTM model on GCP also enables seamless batch processing of large datasets, ensuring timely predictions. Additionally, MLflow's model tracking and versioning features facilitate efficient monitoring and maintenance of the model's performance over time. Furthermore, the Prefect framework orchestrates the workflow, automating data processing, scheduling, and error handling, resulting in a streamlined and reliable end-to-end solution.
 
 To sum, this stock price prediction system addresses the specific needs of traders and investors by providing accurate predictions, timely insights, and efficient model management through cloud technology. With this solution, traders could stay ahead in the fast-paced financial markets, make informed decisions, and enhance their overall financial outcomes.
 
 
 
-*Introduction, Motivation, Objetives and Planning Schema are explained in the paper [here](paper.pdf)*
+*Introduction, Motivation, Objectives and Planning Schema are explained in the paper [here](paper.pdf)*
 
 ## Solution Architecture
 
@@ -116,7 +116,7 @@ The integration of Cloud Functions, BigQuery, and Looker Studio streamlines the 
 
 ## System in Production
 
-**Important**: Before following this guide ensure you have been authorized to connect GCP project (contact the admin: `blajavier@gmail.com`).   
+**Important**: Before following this guide ensure you have been authorized to connect GCP project.   
 
 ### Requirements
 
@@ -124,7 +124,7 @@ To install the app, you need to have Anaconda, Docker, and Docker-Compose instal
 
 **NOTICE**, After installing Anaconda, Google Cloud SDK must be also installed in your system. Lear more [here](https://cloud.google.com/sdk/docs/install?hl=en)
 
-If you are dealing issues with Anaconda environment you may find useful some [bits](troubleshooting_conda.md)
+If you are dealing issues with Anaconda environment, you may find useful some [bits](troubleshooting_conda.md)
 
 To download the Linux 64-bit archive file, at the command line, run:
 
@@ -133,7 +133,7 @@ curl -O https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-
 
 ```
 
-Once Google Cloud SDK had been installed, you account must be authenticate (*previously authorized by admin*). To do so, just write this in the command line:
+Once Google Cloud SDK had been installed, your account must be authenticate (*previously authorized by admin*). To do so, just write this in the command line:
 
 ```bash 
 gcloud auth application-default login
@@ -188,7 +188,7 @@ python src/main.py ETH-USD 2023-07-25 #Ethereum
 
 **4. Check the results in Dashboard**
 
-After a couple od seconds data should have been processed by Google Cloud function. dashboard is available [here](https://lookerstudio.google.com/reporting/a0ed7bcd-5442-4945-b4d3-8d931c7ce11f)
+After a couple of seconds data should have been processed by Google Cloud function. dashboard is available [here](https://lookerstudio.google.com/reporting/a0ed7bcd-5442-4945-b4d3-8d931c7ce11f)
 
 Do not forget update data by clicking here:
 
@@ -199,7 +199,7 @@ Do not forget update data by clicking here:
 
 ### MLFlow Run
 
-In Virtual Machine instance og Google Cloud Platform you should use a command like this:
+In Virtual Machine instance of Google Cloud Platform you should use a command like this:
 
 ```bash
 mlflow server -h 0.0.0.0 -p 5000 --backend-store-uri postgresql://postgres:passwod@sql_private_ip:5432/mlflow --default-artifact-root gs://storage_bucket_name
@@ -210,7 +210,7 @@ Experiment Tracking results after 152 runs simulations:
 
 ![Experiment_Tracking](./img/coordinate_plot.jpg)
 
-MLFlow was deployed in GCP (scenario 5 according [documentation](https://mlflow.org/docs/latest/tracking.html#scenario-5-mlflow-tracking-server-enabled-with-proxied-artifact-storage-access)). 
+MLFlow was deployed in GCP (scenario 5 according to [documentation](https://mlflow.org/docs/latest/tracking.html#scenario-5-mlflow-tracking-server-enabled-with-proxied-artifact-storage-access)). 
 You may check MLFlow experiment tracking and model registry clicking in this [Link](http://34.175.211.162:5000/).
 
 ### Model Registry
@@ -222,7 +222,7 @@ Once best model has been identified, we can register and tag it in MLFlow model 
 ## Orchestration (Prefect 2.0)
 
 ### Prefect Cloud
-Orchestration management has been set in prefect cloud plataform. For self-athentication run this command in your locall or virtual machine
+Orchestration management has been set in prefect cloud platform. For self-authentication run this command in your local or virtual machine
 
 ```bash 
 prefect cloud login
@@ -267,7 +267,7 @@ def generate_report(Y_pred, Y_test):
     return report.save_json("./reports/dataReport.json")
 
 ```
-As a result, we are able to check drift score everyday in dashboard. 
+As a result, we can check drift score every day in dashboard. 
 
 ![Monitor](./img/Dashboard_2.png)
 
@@ -335,14 +335,14 @@ FROM (
 )
 ORDER BY index DESC;
 ```
-Using Bigquery we get data table like this:
+Using BigQuery we get data table like this:
 
 ![Bigquery stock prices](./img/bigquery.png)
 
 As a result, we'll be able to see the following dashboard:
 ![Dashboard](./img/Dashboard_1.png)
 
-## Makefile and Dockefile
+## Makefile and Dockerfile
 
 ### Dockerfile
 ```docker
@@ -379,7 +379,7 @@ CMD ["mlflow", "server", "-h", "0.0.0.0", "-p", "5000", "--backend-store-uri", "
 
 ```make
 # This Makefile defines rules for building and running a Docker container 
-# for an LSTM application. It includes commands to create a data directory, 
+# for a LSTM application. It includes commands to create a data directory, 
 # set its permissions, build a Docker image, and run the Docker container. 
 # The .PHONY target ensures these rules are always executed, 
 # regardless of existing files with the same names as the targets.
@@ -411,7 +411,7 @@ run_docker_container:
 
 ## Recomendations
 
-Alternativately, process may be much more robust with the following workload:
+Alternatively, process may be much more robust with the following workload:
 
 ![architecture](./img/mlops_architecture.drawio.png)
 
